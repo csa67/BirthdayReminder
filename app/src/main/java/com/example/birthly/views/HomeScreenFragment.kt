@@ -90,9 +90,17 @@ fun HomeScreen(navController: NavController) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowBirthdaysList(list: List<Birthday>, navController: NavController) {
+
+    val newBirthdaysList = list.map{
+        birthday ->
+        val daysUntilNextBday = calculateDaysUntilNextBirthday(birthday.birthdate)
+        birthday to daysUntilNextBday
+    }
+
+    val sortedList = newBirthdaysList.sortedBy { it.second }
+
     Column(modifier = Modifier.padding(16.dp)) {
-        list.forEach { birthday ->
-            val daysUntilNextBirthday = calculateDaysUntilNextBirthday(birthday.birthdate)
+        sortedList.forEach { (birthday,daysUntilNextBday) ->
             val formattedDate = formatBirthday(birthday.birthdate)
 
             ElevatedCard(
@@ -115,7 +123,7 @@ fun ShowBirthdaysList(list: List<Birthday>, navController: NavController) {
                     )
                     // Show formatted birthday and days until next birthday
                     Text(
-                        text = "$formattedDate · Coming in $daysUntilNextBirthday days",
+                        text = "$formattedDate · Coming in $daysUntilNextBday days",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
