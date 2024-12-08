@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
-import com.example.birthly.UserViewModel
+import com.example.birthly.viewmodel.UserViewModel
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)

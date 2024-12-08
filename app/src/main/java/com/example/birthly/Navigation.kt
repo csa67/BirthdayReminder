@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.birthly.viewmodel.UserViewModel
 import com.example.birthly.views.AddEventScreen
+import com.example.birthly.views.AllBirthdaysScreen
 import com.example.birthly.views.GreetingScreen
 import com.example.birthly.views.HomeScreen
 
@@ -19,7 +21,7 @@ fun AppNavigation(viewModel: UserViewModel){
     NavHost(navController,
         startDestination = if(userState != null) "home" else "signIn"){
         composable("home"){
-            HomeScreen(navController)
+            HomeScreen(navController, viewModel)
         }
         composable("signIn") {
             SignInScreen(
@@ -33,6 +35,10 @@ fun AppNavigation(viewModel: UserViewModel){
         
         composable("composeGreeting"){
             GreetingScreen(viewModel)
+        }
+
+        composable("allBirthdays") {
+            AllBirthdaysScreen(viewModel)
         }
     }
 }

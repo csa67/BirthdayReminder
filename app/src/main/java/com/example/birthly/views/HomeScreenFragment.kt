@@ -19,16 +19,14 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.birthly.viewmodel.UserViewModel
 import com.example.birthly.model.Birthday
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.TextStyle
@@ -37,24 +35,15 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, viewModel: UserViewModel) {
     val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
     val userId = auth.currentUser?.uid
-
-    var birthdays by remember { mutableStateOf<List<Birthday>>(emptyList()) }
+    val birthdays by viewModel.birthdaysList.collectAsState()
 
     // Fetch birthdays when HomeScreen is loaded
     LaunchedEffect(userId) {
         if (userId != null) {
-            val birthdaysRef = db.collection("users").document(userId).collection("birthdays")
-            birthdaysRef.get()
-                .addOnSuccessListener { snapshot ->
-                    birthdays = snapshot.documents.mapNotNull { it.toObject(Birthday::class.java) }
-                }
-                .addOnFailureListener { e ->
-                    println("Error fetching birthdays: ${e.message}")
-                }
+            viewModel.fetchBirthdays()
         }
     }
 
@@ -86,7 +75,6 @@ fun HomeScreen(navController: NavController) {
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShowBirthdaysList(list: List<Birthday>, navController: NavController) {

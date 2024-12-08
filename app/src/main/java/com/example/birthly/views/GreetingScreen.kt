@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,12 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.birthly.UserViewModel
-import com.google.firebase.vertexai.GenerativeModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import androidx.compose.foundation.layout.Column as Column
+import com.example.birthly.viewmodel.UserViewModel
 
 
 @SuppressLint("UnrememberedMutableInteractionSource")
@@ -46,7 +41,7 @@ fun GreetingScreen(
     viewModel: UserViewModel
 ) {
 
-    var name by remember { mutableStateOf("") }
+    val name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     val generatedContent by viewModel.greeting.collectAsState(initial = null)
     val context = LocalContext.current

@@ -13,9 +13,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.birthly.AppNavigation
-import com.example.birthly.UserViewModel
+import com.example.birthly.viewmodel.UserViewModel
 import com.example.birthly.ui.theme.BirthlyTheme
 import com.google.firebase.FirebaseApp
 
@@ -50,7 +49,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel: UserViewModel = viewModel()
+                    val viewModel: UserViewModel = UserViewModel()
                     AppNavigation(viewModel = viewModel)
                 }
             }
