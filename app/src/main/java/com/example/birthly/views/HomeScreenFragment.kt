@@ -8,25 +8,24 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.birthly.viewmodel.UserViewModel
 import com.example.birthly.model.Birthday
-import com.google.firebase.auth.FirebaseAuth
+import com.example.birthly.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.TextStyle
@@ -36,16 +35,8 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: UserViewModel) {
-    val auth = FirebaseAuth.getInstance()
-    val userId = auth.currentUser?.uid
-    val birthdays by viewModel.birthdaysList.collectAsState()
 
-    // Fetch birthdays when HomeScreen is loaded
-    LaunchedEffect(userId) {
-        if (userId != null) {
-            viewModel.fetchBirthdays()
-        }
-    }
+    val birthdays by viewModel.birthdaysList.collectAsState()
 
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -87,8 +78,8 @@ fun ShowBirthdaysList(list: List<Birthday>, navController: NavController) {
 
     val sortedList = newBirthdaysList.sortedBy { it.second }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        sortedList.forEach { (birthday,daysUntilNextBday) ->
+    LazyColumn(modifier = Modifier.padding(16.dp)) {
+        items(sortedList){ (birthday,daysUntilNextBday) ->
             val formattedDate = formatBirthday(birthday.birthdate)
 
             ElevatedCard(
