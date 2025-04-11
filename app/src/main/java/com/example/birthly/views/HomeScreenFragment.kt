@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.birthly.model.Birthday
-import com.example.birthly.viewmodel.UserViewModel
+import com.example.birthly.viewmodel.BirthlyViewModel
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.TextStyle
@@ -34,7 +34,7 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController, viewModel: UserViewModel) {
+fun HomeScreen(navController: NavController, viewModel: BirthlyViewModel) {
 
     val birthdays by viewModel.birthdaysList.collectAsState()
 
@@ -94,7 +94,6 @@ fun ShowBirthdaysList(list: List<Birthday>, navController: NavController) {
                 }
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    // Show the name in bold
                     Text(
                         text = birthday.name,
                         style = MaterialTheme.typography.bodyLarge,

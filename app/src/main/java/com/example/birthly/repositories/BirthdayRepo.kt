@@ -1,5 +1,6 @@
 package com.example.birthly.repositories
 
+import android.util.Log
 import com.example.birthly.model.Birthday
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,6 +22,7 @@ class BirthdayRepository {
             birthdaysRef.add(birthday).await() // Await Firestore operation
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.d("Adding Birthday error","")
             Result.failure(e)
         }
     }

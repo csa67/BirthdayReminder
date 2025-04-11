@@ -20,14 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
-import com.example.birthly.viewmodel.UserViewModel
+import com.example.birthly.viewmodel.BirthlyViewModel
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableInteractionSource")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEventScreen(viewModel: UserViewModel = viewModel(), navController: NavController) {
+fun AddEventScreen(viewModel: BirthlyViewModel, navController: NavController) {
     var person by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var isToggled by remember { mutableStateOf(false) }
@@ -118,8 +117,8 @@ fun AddEventScreen(viewModel: UserViewModel = viewModel(), navController: NavCon
     }
 }
     @RequiresApi(Build.VERSION_CODES.O)
-    fun addBirthday(person: String, date: String, time: String?, viewModel: UserViewModel, context: Context, navController: NavController){
-        viewModel.addBirthday(person, date, time, context)
+    fun addBirthday(person: String, date: String, time: String?, viewModel: BirthlyViewModel, context: Context, navController: NavController){
+        viewModel.addBirthday(person, date, time, context.applicationContext)
         navController.navigate(
             "home",
             navOptions = NavOptions.Builder()

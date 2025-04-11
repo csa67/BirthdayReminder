@@ -22,10 +22,10 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
-import com.example.birthly.viewmodel.UserViewModel
+import com.example.birthly.viewmodel.BirthlyViewModel
 
 @Composable
-fun AllBirthdaysScreen(viewModel: UserViewModel) {
+fun AllBirthdaysScreen(viewModel: BirthlyViewModel) {
     val searchText by viewModel.searchText.collectAsState() // Observes search text
     val filteredBirthdays by viewModel.filteredList.collectAsState() // Observes filtered list
 

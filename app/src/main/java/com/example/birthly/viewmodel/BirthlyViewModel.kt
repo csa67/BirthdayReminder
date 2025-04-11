@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class UserViewModel(
-    private val authRepository: AuthRepository = AuthRepository(),
-    private val birthdayRepository: BirthdayRepository = BirthdayRepository()
+class BirthlyViewModel(
+    private val authRepository: AuthRepository,
+    private val birthdayRepository: BirthdayRepository
 ) : ViewModel() {
 
     init {
@@ -98,7 +98,7 @@ class UserViewModel(
         }
     }
 
-    fun getBirthdayPrompt(name:String?, age:Int?, description: String?): String {
+    private fun getBirthdayPrompt(name:String?, age:Int?, description: String?): String {
         val prompt = when {
             !name.isNullOrEmpty() && !description.isNullOrEmpty() && age != null && age > 0 -> {
                 "Write a heartfelt birthday message for $name, who is turning $age. Include the following details to make the message special: $description. Keep the tone cheerful, warm, and personal."
@@ -138,7 +138,7 @@ class UserViewModel(
         }
     }
 
-    fun fetchBirthdays() {
+    private fun fetchBirthdays() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = birthdayRepository.getBirthdays()
             result.onSuccess { fetchedBirthdays ->

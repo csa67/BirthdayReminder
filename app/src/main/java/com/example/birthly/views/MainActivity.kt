@@ -13,9 +13,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.birthly.AppNavigation
-import com.example.birthly.viewmodel.UserViewModel
+import com.example.birthly.repositories.AuthRepository
+import com.example.birthly.repositories.BirthdayRepository
 import com.example.birthly.ui.theme.BirthlyTheme
+import com.example.birthly.viewmodel.BirthlyViewModel
+import com.example.birthly.viewmodel.BirthlyViewModelFactory
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
@@ -49,7 +53,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel: UserViewModel = UserViewModel()
+                    val viewModel = ViewModelProvider(
+                        this,
+                        BirthlyViewModelFactory(AuthRepository(), BirthdayRepository())
+                    )[BirthlyViewModel::class.java]
                     AppNavigation(viewModel = viewModel)
                 }
             }

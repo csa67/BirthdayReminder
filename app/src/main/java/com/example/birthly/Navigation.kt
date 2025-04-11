@@ -23,7 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.birthly.viewmodel.UserViewModel
+import com.example.birthly.viewmodel.BirthlyViewModel
 import com.example.birthly.views.AddEventScreen
 import com.example.birthly.views.AllBirthdaysScreen
 import com.example.birthly.views.GreetingScreen
@@ -38,7 +38,7 @@ val topLevelRoutes = listOf(
 )
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavigation(viewModel: UserViewModel){
+fun AppNavigation(viewModel: BirthlyViewModel){
     val navController = rememberNavController()
     val userState = viewModel.userState.value
 

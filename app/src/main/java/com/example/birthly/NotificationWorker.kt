@@ -13,9 +13,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Data
 import androidx.work.WorkRequest
 import java.util.concurrent.TimeUnit
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
 
 class NotificationWorker(
     private val context: Context,
@@ -49,7 +46,7 @@ class NotificationWorker(
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
                 "Birthday Reminders",
@@ -63,7 +60,7 @@ class NotificationWorker(
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("It's $name's birthday! \uD83C\uDF89")
+            .setContentTitle("It's $name's birthday!")
             .setContentText("Send them birthday wishes!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
@@ -89,43 +86,6 @@ fun createWorkRequest(name: String, birthdate: String, notifyTime: String?): Wor
         .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
         .setInputData(inputData)
         .build()
-}
-
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun calculateDelay(birthdate: String, notifyTime: String?): Long {
-    if (birthdate.isEmpty() || notifyTime.isNullOrEmpty()) {
-        println("Invalid input: Birthdate or notifyTime is empty.")
-        return 0L
-    }
-
-    val (month, day) = birthdate.split("/").map { it.toInt() }
-    val today = LocalDate.now()
-    val thisYearBirthday = LocalDate.of(today.year, month, day)
-
-    // Parse notifyTime to hour and minute
-    val (hour, minute) = notifyTime.split(":").map { it.toInt() }
-    val now = LocalDate.now().atTime(LocalTime.now())
-    val notifyDateTime = thisYearBirthday.atTime(hour, minute)
-
-    // Case 1: Today is the birthday, and notifyTime is in the future
-    if (thisYearBirthday.isEqual(today) && notifyDateTime.isAfter(now)) {
-        return notifyDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis()
-    }
-
-    // Case 2: NotifyTime has already passed for today or it’s not today
-    val targetDate = if (thisYearBirthday.isBefore(today) ||
-        (thisYearBirthday.isEqual(today) && notifyDateTime.isBefore(now))) {
-        // Schedule for next year
-        thisYearBirthday.plusYears(1).atTime(hour, minute)
-    } else {
-        // Schedule for this year
-        thisYearBirthday.atTime(hour, minute)
-    }
-
-    // Calculate the delay in milliseconds
-    return targetDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis()
 }
 
 

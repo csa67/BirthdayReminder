@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -31,14 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.birthly.viewmodel.UserViewModel
+import com.example.birthly.viewmodel.BirthlyViewModel
 
 
 @SuppressLint("UnrememberedMutableInteractionSource")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GreetingScreen(
-    viewModel: UserViewModel
+    viewModel: BirthlyViewModel
 ) {
 
     val name by remember { mutableStateOf("") }
@@ -107,11 +107,11 @@ fun copyText(context: Context, textToCopy: String) {
 }
 
 fun shareText(context: Context, textToShare: String) {
-    val shareIntent = android.content.Intent().apply {
-        action = android.content.Intent.ACTION_SEND
-        putExtra(android.content.Intent.EXTRA_TEXT, textToShare)
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, textToShare)
         type = "text/plain"
     }
-    context.startActivity(android.content.Intent.createChooser(shareIntent, "Share via"))
+    context.startActivity(Intent.createChooser(shareIntent, "Share via"))
 }
 
