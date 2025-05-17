@@ -6,13 +6,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkManager
-import com.example.birthly.createWorkRequest
 import com.example.birthly.model.Birthday
 import com.example.birthly.repositories.AuthRepository
 import com.example.birthly.repositories.BirthdayRepository
+import com.example.birthly.scheduleBirthdayReminder
 import com.google.firebase.Firebase
 import com.google.firebase.vertexai.vertexAI
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,9 @@ class BirthlyViewModel(
 ) : ViewModel() {
 
     init {
-        fetchBirthdays()
+        if (authRepository.getCurrentUser() != null) {
+            fetchBirthdays()
+        }
     }
 
     var userState = mutableStateOf(authRepository.getCurrentUser())
@@ -130,8 +132,9 @@ class BirthlyViewModel(
             val result =birthdayRepository.addBirthday(birthday)
             if (result.isSuccess) {
                 Toast.makeText(context, "Birthday added successfully!", Toast.LENGTH_SHORT).show()
-                val workRequest = createWorkRequest(name, birthDate, notifyTime)
-                WorkManager.getInstance(context).enqueue(workRequest)
+                if (notifyTime != null) {
+                    scheduleBirthdayReminder(context,name,birthDate,notifyTime)
+                };
             } else {
                 Toast.makeText(context, "Failed to add birthday: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
             }
@@ -140,15 +143,22 @@ class BirthlyViewModel(
 
     private fun fetchBirthdays() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = birthdayRepository.getBirthdays()
-            result.onSuccess { fetchedBirthdays ->
-                _birthdaysList.value = fetchedBirthdays
-                _errorMessage.value = null // Clear any previous errors
-            }.onFailure { exception ->
-                _errorMessage.value = exception.message
+            try {
+                val result = birthdayRepository.getBirthdays()
+                result.onSuccess { fetchedBirthdays ->
+                    _birthdaysList.value = fetchedBirthdays
+                    _errorMessage.value = null
+                }.onFailure { exception ->
+                    Log.e("BirthlyVM", "Fetch failed: ${exception.message}", exception)
+                    _errorMessage.value = exception.message ?: "Failed to load birthdays"
+                }
+            } catch (e: Exception) {
+                Log.e("BirthlyVM", "Unexpected error: ${e.message}", e)
+                _errorMessage.value = "Unexpected error occurred"
             }
         }
     }
+
 
     fun onSearchTextChange(text: String){
         _searchText.value = text

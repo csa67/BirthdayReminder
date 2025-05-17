@@ -49,7 +49,7 @@ fun AppNavigation(viewModel: BirthlyViewModel){
                 val currentDestination = navBackStackEntry?.destination
                 topLevelRoutes.forEach{ topLevelRoute ->
                     NavigationBarItem(
-                        selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
+                        selected = currentDestination?.route == topLevelRoute.route,
                         onClick = { navController.navigate(topLevelRoute.route){
                             popUpTo(navController.graph.findStartDestination().id){
                                 saveState = true

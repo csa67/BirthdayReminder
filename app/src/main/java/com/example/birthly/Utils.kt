@@ -1,42 +1,23 @@
 package com.example.birthly
 
+
 import android.os.Build
 import androidx.annotation.RequiresApi
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun calculateDelay(birthdate: String, notifyTime: String?): Long {
-    if (birthdate.isEmpty() || notifyTime.isNullOrEmpty()) {
-        println("Invalid input: Birthdate or notifyTime is empty.")
-        return 0L
+fun calculateNextTriggerTime(birthdate: String, notifyTime: String): Long {
+    val formatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm")
+    val birthdayDateTime = LocalDateTime.parse("$birthdate $notifyTime", formatter)
+
+    val now = LocalDateTime.now()
+    var nextBirthday = birthdayDateTime.withYear(now.year)
+
+    if (now > nextBirthday) {
+        nextBirthday = nextBirthday.plusYears(1)
     }
 
-    val (month, day) = birthdate.split("/").map { it.toInt() }
-    val today = LocalDate.now()
-    val thisYearBirthday = LocalDate.of(today.year, month, day)
-
-    // Parse notifyTime to hour and minute
-    val (hour, minute) = notifyTime.split(":").map { it.toInt() }
-    val now = LocalDate.now().atTime(LocalTime.now())
-    val notifyDateTime = thisYearBirthday.atTime(hour, minute)
-
-    // Case 1: Today is the birthday, and notifyTime is in the future
-    if (thisYearBirthday.isEqual(today) && notifyDateTime.isAfter(now)) {
-        return notifyDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis()
-    }
-
-    // Case 2: NotifyTime has already passed for today or it’s not today
-    val targetDate = if (thisYearBirthday.isBefore(today) ||
-        (thisYearBirthday.isEqual(today) && notifyDateTime.isBefore(now))) {
-        // Schedule for next year
-        thisYearBirthday.plusYears(1).atTime(hour, minute)
-    } else {
-        // Schedule for this year
-        thisYearBirthday.atTime(hour, minute)
-    }
-
-    // Calculate the delay in milliseconds
-    return targetDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis()
+    return nextBirthday.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }

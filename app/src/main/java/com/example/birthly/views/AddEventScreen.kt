@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -100,6 +101,11 @@ fun AddEventScreen(viewModel: BirthlyViewModel, navController: NavController) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
+                    .clickable {
+                        showDatePickerDialog(context){selectedTime ->
+                            time = selectedTime
+                        }
+                    }
             )
         }
 
@@ -118,6 +124,7 @@ fun AddEventScreen(viewModel: BirthlyViewModel, navController: NavController) {
 }
     @RequiresApi(Build.VERSION_CODES.O)
     fun addBirthday(person: String, date: String, time: String?, viewModel: BirthlyViewModel, context: Context, navController: NavController){
+        System.out.println("Selected birthday $date & time: $time");
         viewModel.addBirthday(person, date, time, context.applicationContext)
         navController.navigate(
             "home",
@@ -137,7 +144,7 @@ fun AddEventScreen(viewModel: BirthlyViewModel, navController: NavController) {
         DatePickerDialog(
             context,
             { _, selectedYear, selectedMonth, selectedDay ->
-                onDateSelected("$selectedMonth/${selectedDay + 1}/$selectedYear")
+                onDateSelected("${selectedMonth+1}/${selectedDay}/$selectedYear")
             },
             year, month, day
         ).show()
