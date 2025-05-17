@@ -110,50 +110,6 @@ fun HomeScreen(navController: NavController, viewModel: BirthlyViewModel) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowBirthdaysList(list: List<Birthday>, navController: NavController) {
-
-    val newBirthdaysList = list.map{
-        birthday ->
-        val daysUntilNextBday = calculateDaysUntilNextBirthday(birthday.birthdate)
-        birthday to daysUntilNextBday
-    }
-
-    val sortedList = newBirthdaysList.sortedBy { it.second }
-
-    LazyColumn(modifier = Modifier.padding(16.dp)) {
-        items(sortedList){ (birthday,daysUntilNextBday) ->
-            val formattedDate = formatBirthday(birthday.birthdate)
-
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp
-                ),
-                onClick = {
-                    navController.navigate("composeGreeting")
-                }
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = birthday.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    // Show formatted birthday and days until next birthday
-                    Text(
-                        text = "$formattedDate · Coming in $daysUntilNextBday days",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
 fun ShowTodayEvents(birthdays: List<Birthday>) {
     val today = LocalDate.now()
 

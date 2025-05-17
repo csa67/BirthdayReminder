@@ -131,6 +131,7 @@ class BirthlyViewModel(
         viewModelScope.launch {
             val result =birthdayRepository.addBirthday(birthday)
             if (result.isSuccess) {
+                _birthdaysList.value += birthday;
                 Toast.makeText(context, "Birthday added successfully!", Toast.LENGTH_SHORT).show()
                 if (notifyTime != null) {
                     scheduleBirthdayReminder(context,name,birthDate,notifyTime)
