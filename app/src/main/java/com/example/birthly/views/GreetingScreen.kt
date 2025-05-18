@@ -34,8 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.birthly.viewmodel.BirthlyViewModel
 
-
-@SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
 fun GreetingScreen(
     viewModel: BirthlyViewModel
@@ -64,8 +62,7 @@ fun GreetingScreen(
             onClick = {
                 viewModel.generateGreeting(name = name, age=12, description = description)
             },
-            modifier = Modifier.fillMaxWidth(),
-            interactionSource = MutableInteractionSource()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Generate Greeting")
         }

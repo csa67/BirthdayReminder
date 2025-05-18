@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.birthly.repositories.BirthdayRepository
+import com.example.birthly.room.DatabaseProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +19,9 @@ class BootReceiver : BroadcastReceiver() {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
             Log.d("BootReceiver", "Boot completed: rescheduling alarms")
 
-            val repository = BirthdayRepository()
+            val db = DatabaseProvider.getDatabase(context = context)
+            val birthdayDao = db.birthdayDao()
+            val repository = BirthdayRepository(birthdayDao = birthdayDao)
 
             CoroutineScope(Dispatchers.IO).launch {
                 val result = repository.getBirthdays()

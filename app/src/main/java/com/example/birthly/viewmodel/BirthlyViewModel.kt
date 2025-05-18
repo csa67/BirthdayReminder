@@ -2,6 +2,7 @@ package com.example.birthly.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -143,6 +144,7 @@ class BirthlyViewModel(
     }
 
     private fun fetchBirthdays() {
+        getLocalBirthdays()
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = birthdayRepository.getBirthdays()
@@ -164,4 +166,58 @@ class BirthlyViewModel(
     fun onSearchTextChange(text: String){
         _searchText.value = text
     }
+
+    private fun getLocalBirthdays(){
+        viewModelScope.launch {
+            val localBirthdays = birthdayRepository.getLocalBirthdays()
+            _birthdaysList.value += localBirthdays
+        }
+    }
+
+    suspend fun getContactBirthdays(context: Context) {
+        val birthdays = mutableListOf<Pair<String,String>>()
+
+        val projection = arrayOf(
+            ContactsContract.Data.DISPLAY_NAME,
+            ContactsContract.CommonDataKinds.Event.START_DATE
+        )
+
+        //Only fetch rows where data is of type birthday.
+        val selection = "${ContactsContract.Data.MIMETYPE} = ? AND " +
+                "${ContactsContract.CommonDataKinds.Event.TYPE} = ?"
+
+        //Replaces the '?' in selection and checks if type is event and filter out birthdays from it.
+        val selectionArgs = arrayOf(
+            ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE,
+            ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY.toString()
+        )
+
+        val cursor = context.contentResolver.query(
+            ContactsContract.Data.CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )
+
+        cursor?.use {
+            val nameIdx = it.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)
+            val birthdayIdx = it.getColumnIndex(ContactsContract.CommonDataKinds.Event.START_DATE)
+
+            while(it.moveToNext()){
+                val name = it.getString(nameIdx)
+                val birthday = it.getString(birthdayIdx)
+
+                if(!name.isNullOrEmpty() && !birthday.isNullOrEmpty()){
+                    birthdays.add(Pair(name,birthday));
+                }
+            }
+        }
+
+        birthdays.forEach { it ->
+            birthdayRepository.addLocalBirthday(it);
+        }
+
+    }
+
 }

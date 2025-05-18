@@ -2,11 +2,14 @@ package com.example.birthly.repositories
 
 import android.util.Log
 import com.example.birthly.model.Birthday
+import com.example.birthly.room.BirthdayDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class BirthdayRepository {
+class BirthdayRepository(
+    private val birthdayDao: BirthdayDao
+) {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
@@ -41,6 +44,22 @@ class BirthdayRepository {
             Result.success(birthdays)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun addLocalBirthday(birthday: Pair<String,String>){
+        val entity = Birthday(
+            name = birthday.first,
+            birthdate = birthday.second,
+            notifyTime = null
+        )
+
+        birthdayDao.insert(entity)
+    }
+
+    suspend fun getLocalBirthdays(): List<Birthday>{
+        return birthdayDao.getAll().map {
+            Birthday(it.name,it.birthdate,it.notifyTime)
         }
     }
 }
